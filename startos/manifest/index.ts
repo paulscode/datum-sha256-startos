@@ -62,7 +62,7 @@ export const manifest = setupManifest({
         // A dependency icon is an absolute URL into the dependency's repo, not a
         // magic filename, so PNG is fine (E9). It is fetched by the StartOS UI,
         // which means the packaging repo has to be public for it to render.
-        icon: 'https://raw.githubusercontent.com/paulscode/knots-prerdts-startos/4dcb43811bf695ce6631e3e43876b41db52300ed/dep-icon.png',
+        icon: 'https://raw.githubusercontent.com/paulscode/knots-prerdts-startos/c09a1e9b2328adcd7390c9a16c4c5226a573673d/dep-icon.png',
       },
     },
   },
