@@ -1,0 +1,96 @@
+# DATUM Gateway, built from upstream master.
+#
+# The same source and the same pinned commit as the BLAKE2b sibling. That is not
+# an oversight: the fork this builds from carries nothing of its own any more, it
+# is a mirror of OCEAN upstream, and upstream DATUM speaks both algorithms. This
+# package differs from that one in which node it depends on and what it says, not
+# in what it builds.
+#
+# Built from our fork, which now carries nothing of its own: it is a mirror of
+# upstream master, kept so the pin below cannot move out from under us.
+#
+# Both patches this build used to carry are upstream. The h1 complete-version bug
+# is fixed in 56c31f4, in datum_pow.c rather than at the call site where ours put
+# it, which is the better place: the commitment function is now correct for any
+# caller. The test correction is 57f1aee, which replaces a "canonical profile-0
+# vector published with Knots' header-v2 implementation" that was not the
+# published vector, passing m_flags 0x5c where Knots' block_header_v2.json has
+# 0x1c and expecting values it had computed for itself. 0x5c also sets 0x40,
+# which Knots rejects as bad-flags-highbits.
+#
+# `--test` below is therefore now checking the gateway against Knots' own vectors
+# rather than against itself, which is the only comparison that catches the
+# gateway and the node disagreeing.
+#
+# Pinned by commit, not by branch. A branch name is a moving target and this is
+# the one input that decides whether the work we hand an ASIC matches consensus.
+FROM debian:bookworm-slim AS build
+
+ARG DATUM_REPO=https://github.com/paulscode/datum_gateway.git
+ARG DATUM_REF=beb946154dde86b69d9afd008974198ddd08bc4c
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential cmake pkgconf git ca-certificates \
+        libcurl4-openssl-dev libjansson-dev libsodium-dev libmicrohttpd-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src
+RUN git init -q \
+ && git remote add origin "$DATUM_REPO" \
+ && git fetch -q --depth 1 origin "$DATUM_REF" \
+ && git checkout -q FETCH_HEAD \
+ && git rev-parse HEAD > /src/PINNED_COMMIT
+
+# -DDATUM_API_FOR_UMBREL compiles in `/umbrel-api`, a small unauthenticated JSON
+# endpoint returning connected clients and estimated hashrate in the shape
+# umbrelOS wants for a home-screen widget. Upstream gates it behind that flag and
+# sets it in its own Umbrel CI build.
+#
+# Set unconditionally here, because one image serves both platforms and a
+# StartOS-only build with the flag missing is how the widget silently 404s. It
+# adds no exposure: those two figures are already on the status page, which needs
+# no password, and are what this package's own health checks scrape from it.
+#
+# Found by asking the running gateway rather than by reading the source. The
+# source at our pin has the route, so grepping for it says yes; the string is not
+# even in the binary, because gcc inlines a short strcmp against a constant, so
+# grepping the binary says no for the wrong reason. `curl /umbrel-api` on a
+# running container answered 404, which is the only test that settles it.
+RUN cmake -B build -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_C_FLAGS=-DDATUM_API_FOR_UMBREL \
+ && cmake --build build -j"$(nproc)" \
+ && ./build/datum_gateway --test \
+ && strip build/datum_gateway
+
+# ----------------------------------------------------------------------
+FROM debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libcurl4 libjansson4 libsodium23 libmicrohttpd12 wget python3 \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd -r -m -d /data -u 1000 datum
+
+COPY --from=build /src/build/datum_gateway /usr/local/bin/datum_gateway
+COPY --from=build /src/PINNED_COMMIT /etc/datum-pinned-commit
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Three Python scripts used to be installed here: a recording proxy for an opt-in
+# compatibility-test port, a summariser that turned a capture into a report, and a
+# one-page web front end for it. All removed in 1.0.0:43, along with the
+# `/etc/datum-tooling-id` fingerprint that existed so a report could identify the
+# build it came from.
+#
+# python3 stays, and the comment that used to say it was here only for those
+# scripts was wrong even then: entrypoint.sh uses it to merge DATUM_SETTINGS over
+# the generated config, one level deep with a reserved-key check, which is more
+# than this should be doing in shell.
+
+VOLUME /data
+EXPOSE 23334 7152
+
+USER datum
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+# The Umbrel app overrides both of these and runs datum_gateway directly against
+# a persistent config file, which is what the official Umbrel Datum app does. See
+# that app's docker-compose.yml.

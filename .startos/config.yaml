@@ -1,0 +1,12 @@
+schema: 1
+host:
+  default: https://worthy-maverick.local
+  prod: https://prodbox.local
+registry:
+  # Our own 0.4.0 registry (~/workspace/start9-store/start9-040). 0.4.0.x only:
+  # 0.3.5.x uses an entirely different, incompatible registry generation and we
+  # are not shipping new apps there.
+  default: https://start9.paulscode.com
+  start9-alpha: https://alpha-registry-x.start9.com
+  beta: https://beta-registry.start9.com
+  prod: https://registry.start9.com
