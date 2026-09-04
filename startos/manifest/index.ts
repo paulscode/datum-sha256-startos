@@ -62,7 +62,17 @@ export const manifest = setupManifest({
         // A dependency icon is an absolute URL into the dependency's repo, not a
         // magic filename, so PNG is fine (E9). It is fetched by the StartOS UI,
         // which means the packaging repo has to be public for it to render.
-        icon: 'https://raw.githubusercontent.com/paulscode/knots-prerdts-startos/c09a1e9b2328adcd7390c9a16c4c5226a573673d/dep-icon.png',
+        // `main`, not a pinned commit, matching what electrs-pruned and
+        // mempool-pruned already do for this same icon.
+        //
+        // A pinned SHA was tried first and is the wrong trade here. This URL is
+        // fetched at BUILD time, so a SHA that is not yet pushed fails the build
+        // outright, and one that is pushed goes stale the moment the icon is
+        // re-banded, which is exactly what just happened when the node was
+        // renamed to SHA256. Floating on main costs nothing: the file is a
+        // 128px icon, and the failure mode of it changing is that the
+        // dependency prompt shows a newer icon.
+        icon: 'https://raw.githubusercontent.com/paulscode/knots-prerdts-startos/main/dep-icon.png',
       },
     },
   },
