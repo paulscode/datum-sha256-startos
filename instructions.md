@@ -22,13 +22,16 @@ gateway builds follow the side that does not require it.
 
 ### 1. Get a payout address
 
-1. Open **Bitcoin Knots (SHA256) Companion**.
-2. Make sure it is **running**.
-3. Go to **Actions** and run **Get Address**.
-4. Copy the address. It starts with `bc1`.
+Mining solo pays a whole block subsidy to one address, so use an address from a
+wallet whose keys you hold and already back up. A desktop wallet such as
+[Sparrow](https://sparrowwallet.com) is the usual answer: create a receive
+address there and copy it. It starts with `bc1`. This node follows the same chain
+your ordinary wallet does, so any Bitcoin wallet will do.
 
-That address belongs to a wallet on that node. Back it up, or use an address from
-a wallet you already back up.
+You can instead use an address from the node's own wallet, via **Get Address** on
+**Bitcoin Knots (SHA256) Companion**. That is a wallet living on the server with
+no seed phrase in your hands, so it is only as safe as your backups of that
+service.
 
 ### 2. Tell the gateway where to pay
 

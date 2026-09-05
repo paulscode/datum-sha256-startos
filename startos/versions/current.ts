@@ -1,26 +1,17 @@
 import { IMPOSSIBLE, VersionInfo } from '@start9labs/start-sdk'
 
-const notes =
-  'First release. ' +
-  ' ' +
-  'A DATUM Gateway that mines the SHA256 chain against Bitcoin Knots (SHA256) ' +
-  'Companion, the node that never enforces BIP-110. If the network splits over ' +
-  'that rule, blocks this gateway builds follow the side that does not require ' +
-  'it. ' +
-  ' ' +
-  'It installs alongside the official Datum Gateway rather than replacing it, ' +
-  'so you can point one gateway at your primary node and this one at the ' +
-  'companion. Its Stratum port is 23338 and its dashboard 7154, chosen so all ' +
-  'three Datum services can run at once. ' +
-  ' ' +
-  'The settings, their groupings and their names follow the official package, ' +
-  'so anyone who knows that one finds the same things in the same places. Set a ' +
-  'payout address before you mine: solo mining pays a found block’s whole ' +
-  'subsidy to the address configured here, and the service will not start until ' +
-  'one is set.'
+const notes = `Removes the "Get Address" task this service raised against the node.
+
+It showed in the Dependencies section as Recommended, telling you to fetch a payout address from the node's own wallet. That is a habit from when this pair served a private test chain, where the node's wallet was the only wallet involved and the coins were worthless.
+
+On mainnet it is advice that can cost real money. Mining solo pays a whole block subsidy to the single address you configure, so it should be an address from a wallet whose keys you hold and already back up, typically an external wallet such as Sparrow. The node's wallet lives on the server with no seed phrase in your hands.
+
+The node's Get Address action is untouched and still there for anyone who wants it. This service simply no longer recommends it, and the payout form and instructions now point at a wallet you control instead.
+
+An existing install has the old task cleared on its next start. StartOS does not remove tasks on its own, so dropping the code that created it is not enough to make it disappear.`
 
 export const current = VersionInfo.of({
-  version: '1.0.0:0',
+  version: '1.0.0:1',
   releaseNotes: {
     en_US: notes,
     es_ES: notes,
@@ -29,7 +20,9 @@ export const current = VersionInfo.of({
     fr_FR: notes,
   },
   migrations: {
-    // Nothing to migrate into: this is the first version of a new package.
+    // Nothing to migrate. The task is cleared by `setDependencies` on every
+    // init rather than here, so an install that never crosses this exact edge
+    // is repaired too. 1.0.0:0 carried no migration, so nothing spins off.
     up: async ({ effects }) => {},
     down: IMPOSSIBLE,
   },
