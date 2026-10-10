@@ -122,6 +122,9 @@ const dict = {
   'Estimated hashrate': 118,
   'Could not read the hashrate': 119,
   'A Bitcoin address starting with bc1, 1 or 3, from a wallet whose keys you hold. A block found solo pays its whole subsidy here.': 120,
+  'Seconds between routine work updates sent to miners. A new block is picked up immediately regardless. The gateway enforces at least 5.': 121,
+  'Starting share difficulty. Vardiff adapts from here; a low value lets a slow hasher produce shares immediately on connect. Rounded down to a power of two.': 122,
+  'Accept the PROXY protocol from miners’ connections, trusting this many levels of proxies when reading a miner’s address. Leave empty to keep it off.': 123,
 } as const
 
 /**

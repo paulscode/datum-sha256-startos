@@ -1,13 +1,15 @@
 # DATUM Gateway, built from upstream master.
 #
-# The same source and the same pinned commit as the BLAKE2b sibling. That is not
-# an oversight: the fork this builds from carries nothing of its own any more, it
-# is a mirror of OCEAN upstream, and upstream DATUM speaks both algorithms. This
-# package differs from that one in which node it depends on and what it says, not
-# in what it builds.
+# The same repository as the BLAKE2b sibling, and a different commit on it. The
+# BLAKE2b package builds from the Convoy-based branch, because only Convoy's fork
+# can talk to the pool that serves that chain; this one builds from master, which
+# tracks OCEAN. Upstream DATUM speaks both algorithms, so beyond that the two
+# packages differ in which node they depend on and what they say, not in what
+# they build.
 #
-# Built from our fork, which now carries nothing of its own: it is a mirror of
-# upstream master, kept so the pin below cannot move out from under us.
+# Master is close to a mirror of OCEAN upstream. What it carries of its own is
+# the stratum password difficulty feature and, as of ad57651, the dupe table
+# index fix and the local share reject reasons.
 #
 # Both patches this build used to carry are upstream. The h1 complete-version bug
 # is fixed in 56c31f4, in datum_pow.c rather than at the call site where ours put
@@ -24,10 +26,18 @@
 #
 # Pinned by commit, not by branch. A branch name is a moving target and this is
 # the one input that decides whether the work we hand an ASIC matches consensus.
+#
+# ad57651 adds the dupe table index fix and the local share reject reasons. The
+# fix is the reason to move: the per-thread duplicate share table corrupted its
+# own bucket index the first time it filled, which is a few hours of mining, and
+# only restarting the gateway cleared it. The reject reasons ship with it rather
+# than after it, because they are how an operator sees whether it worked: the
+# dashboard now says what refused a share instead of only how many. Both went
+# upstream as OCEAN #237 and Convoy #18.
 FROM debian:bookworm-slim AS build
 
 ARG DATUM_REPO=https://github.com/paulscode/datum_gateway.git
-ARG DATUM_REF=beb946154dde86b69d9afd008974198ddd08bc4c
+ARG DATUM_REF=ad5765196092a1b1be9c8dfa77f0d854d84af387
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential cmake pkgconf git ca-certificates \

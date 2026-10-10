@@ -42,7 +42,7 @@ What differs:
 |---|---|---|
 | depends on | `knots-blake2b` | `knots-prerdts` |
 | dependency health check | `node` | `bitcoind` |
-| dependency version range | `>=1.0.0` | `>=#knotsprerdts:29.3:25` |
+| dependency version range | `>=1.0.0` | `>=#knotsprerdts:29.3:29` |
 | stratum / dashboard | 23336 / 7153 | 23338 / 7154 |
 | pooled mining | impossible | supported |
 | plain-Docker compose | ships one | none |

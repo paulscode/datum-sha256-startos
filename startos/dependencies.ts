@@ -43,7 +43,11 @@ export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
       // Flavored, and it has to be: `knots-prerdts` versions are
       // `#knotsprerdts:29.3:N`, and a flavored version never satisfies an
       // unflavored range. `>=1.0.0` would match nothing at all.
-      versionRange: '>=#knotsprerdts:29.3:25',
+      // :29 is the node release whose btc-rpc-proxy (v0.8.1) re-reads the cookie.
+      // Before it the proxy read the cookie once, so after the node's next
+      // restart every RPC call from here got 401 for good (upstream a56e874
+      // raised its own range for the same reason).
+      versionRange: '>=#knotsprerdts:29.3:29',
       // `bitcoind`, not `node`. This package's sibling requires `node`, because
       // the BLAKE2b node kept that id as its published contract with three
       // dependents. `knots-prerdts` is a thin fork of the official Knots

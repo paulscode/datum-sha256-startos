@@ -1,17 +1,19 @@
 import { IMPOSSIBLE, VersionInfo } from '@start9labs/start-sdk'
 
-const notes = `Removes the "Get Address" task this service raised against the node.
+const notes = `Fixes a fault that could start rejecting your shares after several hours of mining.
 
-It showed in the Dependencies section as Recommended, telling you to fetch a payout address from the node's own wallet. That is a habit from when this pair served a private test chain, where the node's wallet was the only wallet involved and the coins were worthless.
+The gateway keeps a table of recently seen shares so it can recognise a duplicate. The first time that table filled up, it corrupted its own index of it, and nothing put that right short of restarting the gateway. How long that takes depends on how many shares your miners send: a few hours is typical, sooner with more of them connected. If you have seen your reject rate climb out of nowhere and then clear when you restarted the gateway, this is the likely cause.
 
-On mainnet it is advice that can cost real money. Mining solo pays a whole block subsidy to the single address you configure, so it should be an address from a wallet whose keys you hold and already back up, typically an external wallet such as Sparrow. The node's wallet lives on the server with no seed phrase in your hands.
+Alongside the fix, the status page now says why shares were refused rather than only how many. A new "Rejected Because" line under the rejected total lists the reasons that have actually happened, worst first, and reads "None" when there are none. The Clients page gains a "Last Reject" column, which is what tells one badly configured miner apart from something affecting everything at once. The names are the same ones your miner's own log shows, so the two can be read side by side.
 
-The node's Get Address action is untouched and still there for anyone who wants it. This service simply no longer recommends it, and the payout form and instructions now point at a wallet you control instead.
+This version needs Bitcoin Knots (pre-RDTS) 29.3:29 or later. Earlier node releases read the RPC cookie only once, so after the node's next restart every request from this service failed until both were restarted.
 
-An existing install has the old task cleared on its next start. StartOS does not remove tasks on its own, so dropping the code that created it is not enough to make it disappear.`
+Two settings now say what the gateway actually does with them. Work Update Seconds accepts 5 or more, because the gateway has always raised anything lower to 5; a saved value below that now shows as 5. The minimum difficulty is rounded down to a power of two before it reaches the gateway, which did the same rounding itself but complained about it in the log on every start.
+
+You do not need to reconfigure your miners.`
 
 export const current = VersionInfo.of({
-  version: '1.0.0:1',
+  version: '1.0.0:2',
   releaseNotes: {
     en_US: notes,
     es_ES: notes,
@@ -20,9 +22,9 @@ export const current = VersionInfo.of({
     fr_FR: notes,
   },
   migrations: {
-    // Nothing to migrate. The task is cleared by `setDependencies` on every
-    // init rather than here, so an install that never crosses this exact edge
-    // is repaired too. 1.0.0:0 carried no migration, so nothing spins off.
+    // Nothing to migrate. The dupe table is rebuilt from nothing on every start,
+    // so the corrupted state this fixes cannot survive the restart that installing
+    // this performs, and the new reject counters start at zero by the same route.
     up: async ({ effects }) => {},
     down: IMPOSSIBLE,
   },

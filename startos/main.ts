@@ -9,6 +9,10 @@ import {
 import { sdk } from './sdk'
 import { dataDir, knotsMountpoint, stratumPort, uiPort } from './utils'
 
+/** The largest power of two not above `n` (and at least 1). */
+const floorPowerOfTwo = (n: number) =>
+  2 ** Math.floor(Math.log2(Math.max(1, Math.floor(n))))
+
 // The node's stable contract. Its *internal* port and host id are what may be
 // relied on; its external port is assigned at runtime and must never be assumed.
 const KNOTS_PKG = 'knots-prerdts'
@@ -105,7 +109,11 @@ export const main = sdk.setupMain(async ({ effects }) => {
     // rewards somewhere they do not control, so empty means the critical task
     // in init/watchPayoutAddress asks for one and the service does not start.
     POOL_ADDRESS: store?.poolAddress ?? '',
-    VARDIFF_MIN: String(store?.vardiffMin ?? 64),
+    // A power of two, always. The gateway this builds rounds a stray value down
+    // itself, but warns about it on every start, and the Convoy line refuses one
+    // outright now that config errors are fatal. Round it here, the one place it
+    // is written, so the log stays clean and a later gateway cannot trip on it.
+    VARDIFF_MIN: String(floorPowerOfTwo(store?.vardiffMin ?? 64)),
     ADMIN_PASSWORD: store?.adminPassword ?? '',
     // Everything the config actions set, as one JSON object that the entrypoint
     // merges over the config it generates. One variable rather than forty keeps
