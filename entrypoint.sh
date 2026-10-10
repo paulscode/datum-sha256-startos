@@ -113,6 +113,12 @@ STRATUM_PORT="${STRATUM_PORT:-23334}"
 API_PORT="${API_PORT:-7152}"
 VARDIFF_MIN="${VARDIFF_MIN:-1024}"
 
+# Reading a difficulty request from the Stratum password (d=N, fd=N) becomes
+# opt-in upstream, via stratum.password_difficulty, as asked in review of OCEAN
+# #234. The gateway this builds predates that and always reads it, and ignores
+# the key; it is written now so that moving the pin to a gateway with the
+# option keeps what this package has always offered. Not reserved below.
+
 # The label this gateway puts in the coinbase of blocks it builds. Free text, and
 # entirely the operator's to choose: the Mining config action sets it, and DATUM's
 # own default applies when they have not.
@@ -159,7 +165,8 @@ cat > "$CONF" <<JSON
 	"stratum": {
 		"listen_port": ${STRATUM_PORT},
 		"vardiff_min": ${VARDIFF_MIN},
-		"fingerprint_miners": ${FINGERPRINT_MINERS:-true}
+		"fingerprint_miners": ${FINGERPRINT_MINERS:-true},
+		"password_difficulty": true
 	},
 	"mining": {
 		"pool_address": "${POOL_ADDRESS}",
