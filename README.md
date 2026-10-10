@@ -30,9 +30,11 @@ itself aligned to the official Datum Gateway package's action list, health-check
 names and interface names. So this inherits that alignment rather than
 re-deriving it.
 
-**The image is byte-identical in intent: same Dockerfile, same pinned commit.**
-That fork of DATUM carries nothing of its own any more; it is a mirror of OCEAN
-upstream, and upstream DATUM speaks both algorithms. `pow_algorithm` is left at
+**The image is built from the same fork, at a different commit.** `datum-blake2b`
+builds the Convoy-based branch, because only Convoy's fork talks to the pool on that
+chain. This package builds `master`, which tracks OCEAN upstream and carries our
+password difficulty, the dupe index fix and the local share reject reasons; the pin
+is in the [Dockerfile](Dockerfile). Upstream DATUM speaks both algorithms. `pow_algorithm` is left at
 `auto`, which takes the algorithm from the node's template, and against this node
 that always resolves to SHA256d.
 
