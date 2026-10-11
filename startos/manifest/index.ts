@@ -1,6 +1,5 @@
 import { setupManifest } from '@start9labs/start-sdk'
 import { long, short } from './i18n'
-import { knotsDependencyDescription } from './i18n-dependency'
 
 export const manifest = setupManifest({
   // Deliberately NOT `datum`: that is the official Datum Gateway package, and
@@ -41,42 +40,6 @@ export const manifest = setupManifest({
         },
       },
       arch: ['x86_64', 'aarch64'],
-    },
-  },
-  dependencies: {
-    // The SHA256 companion, not the official `bitcoind`.
-    //
-    // Unlike the BLAKE2b package, this is not a correctness requirement about
-    // which chain gets mined: `knots-prerdts` follows the same chain the
-    // official node does, so templates from either would be valid. It is a
-    // requirement about which node this gateway can reach at all. StartOS
-    // resolves a dependency by id, and pointing it at `bitcoind` would mean
-    // depending on a package the user may not have, while the companion is the
-    // one this pairs with.
-    //
-    // The practical difference the companion makes is BIP-110: it never
-    // enforces RDTS, so if the network splits over it, blocks this gateway
-    // builds follow the side that does not require it.
-    'knots-prerdts': {
-      description: knotsDependencyDescription,
-      optional: false,
-      metadata: {
-        title: 'Bitcoin Knots (SHA256) Companion',
-        // A dependency icon is an absolute URL into the dependency's repo, not a
-        // magic filename, so PNG is fine (E9). It is fetched by the StartOS UI,
-        // which means the packaging repo has to be public for it to render.
-        // `main`, not a pinned commit, matching what electrs-pruned and
-        // mempool-pruned already do for this same icon.
-        //
-        // A pinned SHA was tried first and is the wrong trade here. This URL is
-        // fetched at BUILD time, so a SHA that is not yet pushed fails the build
-        // outright, and one that is pushed goes stale the moment the icon is
-        // re-banded, which is exactly what just happened when the node was
-        // renamed to SHA256. Floating on main costs nothing: the file is a
-        // 128px icon, and the failure mode of it changing is that the
-        // dependency prompt shows a newer icon.
-        icon: 'https://raw.githubusercontent.com/paulscode/knots-prerdts-startos/main/dep-icon.png',
-      },
     },
   },
 })
