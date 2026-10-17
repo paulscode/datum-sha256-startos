@@ -33,9 +33,7 @@ const knots = sdk.Dependency.required('knots-prerdts', {
     // dependency prompt shows a newer icon.
     icon: 'https://raw.githubusercontent.com/paulscode/knots-prerdts-startos/main/dep-icon.png',
   },
-  // Our node, never the official `bitcoind`. Depending on `bitcoind` would bind
-  // this gateway to the user's mainnet node and generate templates for the
-  // wrong chain, which a Sia miner cannot mine and the node would reject.
+  // Our node, never the official `bitcoind`. See the comment at the top.
   //
   // 'running' rather than 'exists': the gateway needs live templates, not just
   // an installed node. This drives the warning UI only; it does not gate

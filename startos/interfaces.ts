@@ -13,13 +13,13 @@ export const setInterfaces = sdk.setupInterfaces(async ({ effects }) => {
     // `secure: { ssl: false }` declares a plaintext protocol deliberately, which
     // is what gets a LAN-reachable listener. `secure: null` allocates a port
     // reachable over lxcbr0 and nowhere else, so the miner could never see it.
-    // Stratum v1 to a stock Sia ASIC is plain TCP; there is no TLS option here.
+    // Stratum v1 to an ASIC is plain TCP; there is no TLS option here.
     secure: { ssl: false },
   })
   const stratum = sdk.createInterface(effects, {
     name: i18n('Stratum'),
     id: 'stratum',
-    description: i18n('Point your BLAKE2b ASIC at this address'),
+    description: i18n('Point your SHA256 ASIC at this address'),
     type: 'p2p',
     masked: false,
     schemeOverride: { ssl: null, noSsl: 'stratum+tcp' },

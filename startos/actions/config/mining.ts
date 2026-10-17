@@ -6,7 +6,7 @@ const inputSpec = InputSpec.of({
   coinbase_tag_primary: Value.text({
     name: i18n('Primary Coinbase Tag'),
     description: i18n(
-      'Free text placed in the coinbase of blocks this gateway builds, when mining solo. Leave blank to use the value this chain requires at its activation block. A pool overrides this.',
+      'Free text placed in the coinbase of blocks this gateway builds, when mining solo. Leave blank for “DATUM Gateway”. A pool overrides this.',
     ),
     required: false,
     default: null,
@@ -44,24 +44,9 @@ const inputSpec = InputSpec.of({
  * nowhere. Duplicating it as a form field would give the same value two
  * editors.
  *
- * **The primary coinbase tag** used to be missing here, locked to the node's
- * `blake2b_headline`, on the grounds that editing it would be editing a
- * consensus value unknowingly. That was too broad. The headline is consensus for
- * exactly one block on any chain, the one at the activation height:
- * `validation.cpp` runs the check only when
- * `block.m_height == DeploymentHeight(DEPLOYMENT_BLAKE2B)`. Everywhere else the
- * field is what DATUM says it is, "text to have in the primary coinbase tag when
- * not using pool", which is a label for your own blocks.
- *
- * So it is editable, and blank still means "use the headline", which keeps a
- * private chain working with nothing set. The entrypoint holds the one case that
- * matters: if the node has not yet reached the activation height, it appends the
- * headline to whatever was chosen rather than dropping either, and refuses if the
- * two together exceed DATUM's 60-byte field rather than truncating. A truncated
- * headline is a rejected block that looks like bad luck.
- *
- * On mainnet this is already moot. Activation was block 961640 on 30 August 2026,
- * so any block mined now is past it.
+ * **The primary coinbase tag** is editable, and blank means DATUM Gateway's
+ * default, "DATUM Gateway". Until 1.0.0:4 its description promised the BLAKE2b
+ * sibling's activation headline, which this package never had.
  */
 export const miningConfig = sdk.Action.withInput(
   'mining-config',
