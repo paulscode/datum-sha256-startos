@@ -106,13 +106,18 @@ created for you when the service is installed, so this works without any setup.
 
 If you rent hashrate, you can ask this gateway to start a connection at a
 particular share difficulty by sending it as the Stratum password, in the form
-`d=1024`. Use `fd=1024` to pin it there and stop it adjusting.
+`d=1048576`.
 
 Rented hashrate is billed by the hour and the ordinary difficulty search wastes
 the first minutes of it. This is a plain password field on every rental service,
 so it works without either side supporting anything new, and a gateway that does
-not understand it simply ignores it. The value is rounded down to a power of two
-and is a floor, not a ceiling.
+not understand it simply ignores it. The value is rounded up to a power of two.
+It is a floor, not a ceiling: difficulty can still rise from there, but not fall
+below it. A request below the gateway's minimum share difficulty is raised to that
+minimum.
+
+`fd=`, which used to pin the difficulty and stop it adjusting, is no longer
+supported and is ignored.
 
 ## Changing settings
 

@@ -113,11 +113,12 @@ STRATUM_PORT="${STRATUM_PORT:-23334}"
 API_PORT="${API_PORT:-7152}"
 VARDIFF_MIN="${VARDIFF_MIN:-1024}"
 
-# Reading a difficulty request from the Stratum password (d=N, fd=N) becomes
-# opt-in upstream, via stratum.password_difficulty, as asked in review of OCEAN
-# #234. The gateway this builds predates that and always reads it, and ignores
-# the key; it is written now so that moving the pin to a gateway with the
-# option keeps what this package has always offered. Not reserved below.
+# Reading a difficulty request from the Stratum password (d=N) is opt-in
+# upstream, via stratum.password_difficulty, as asked in review of OCEAN #234.
+# On here, so a renter can still ask for a starting difficulty in the one field
+# rental services let them set. A request only raises difficulty and never goes
+# below vardiff_min; the old fd=N, which also froze vardiff, is gone. Not
+# reserved below.
 
 # The label this gateway puts in the coinbase of blocks it builds. Free text, and
 # entirely the operator's to choose: the Mining config action sets it, and DATUM's
@@ -171,8 +172,7 @@ cat > "$CONF" <<JSON
 	"mining": {
 		"pool_address": "${POOL_ADDRESS}",
 		"coinbase_tag_primary": "${COINBASE_TAG}",
-		"coinbase_tag_secondary": "",
-		"pow_algorithm": "${POW_ALGORITHM:-auto}"
+		"coinbase_tag_secondary": ""
 	},
 	"api": {
 		"admin_password": "${ADMIN_PASSWORD_JSON}",
@@ -230,7 +230,7 @@ except json.JSONDecodeError as e:
 RESERVED = {
     "bitcoind": {"rpcuser", "rpcpassword", "rpcurl", "rpccookiefile"},
     "stratum": {"listen_port", "listen_addr"},
-    "mining": {"pool_address", "pow_algorithm"},
+    "mining": {"pool_address"},
     "api": {"listen_port", "listen_addr", "admin_password", "modify_conf"},
     "logger": {"log_to_console", "log_to_stderr"},
 }

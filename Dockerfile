@@ -1,43 +1,36 @@
-# DATUM Gateway, built from upstream master.
+# DATUM Gateway, built from OCEAN upstream master plus our own commits.
 #
-# The same repository as the BLAKE2b sibling, and a different commit on it. The
+# The same repository as the BLAKE2b sibling, and a different line on it. The
 # BLAKE2b package builds from the Convoy-based branch, because only Convoy's fork
-# can talk to the pool that serves that chain; this one builds from master, which
-# tracks OCEAN. Upstream DATUM speaks both algorithms, so beyond that the two
-# packages differ in which node they depend on and what they say, not in what
-# they build.
+# can talk to the pool that serves that chain. This one builds from the
+# `ocean-sha256-2` branch: OCEAN master (9e80dac, 2026-10-17) and four commits:
 #
-# Master is close to a mirror of OCEAN upstream. What it carries of its own is
-# the stratum password difficulty feature and, as of ad57651, the dupe table
-# index fix and the local share reject reasons.
+# - b46d74c: a miner can ask for a minimum difficulty, through mining.configure
+#   or, when stratum.password_difficulty is on, d=N in the password. This is our
+#   OCEAN #234 as reviewed: a request only raises difficulty, rounds up to a
+#   power of two and never lands below vardiff_min. There is no fd= any more.
+# - fe82d01: gateway-local share counts, so the dashboard shows miner work when
+#   solo, and the Umbrel widget's share stat uses them when no pool is set.
+# - df51d73, 0c51cc6: why each local share was rejected, on the dashboard and
+#   the clients page.
 #
-# Both patches this build used to carry are upstream. The h1 complete-version bug
-# is fixed in 56c31f4, in datum_pow.c rather than at the call site where ours put
-# it, which is the better place: the commitment function is now correct for any
-# caller. The test correction is 57f1aee, which replaces a "canonical profile-0
-# vector published with Knots' header-v2 implementation" that was not the
-# published vector, passing m_flags 0x5c where Knots' block_header_v2.json has
-# 0x1c and expecting values it had computed for itself. 0x5c also sets 0x40,
-# which Knots rejects as bad-flags-highbits.
+# The previous pin (ad57651) was OCEAN master as of 2026-08-05 under the BLAKE2b
+# header-v2 mining commits from justinfilip and Jason Sopko. None of those do
+# anything against a SHA256 node: they only engage when the template asks for
+# BLAKE2b. They were here because the local share stats and the reject reasons
+# were written on top of them. Both are ported onto OCEAN master on their own,
+# and the BLAKE2b code, the macOS build and the old password difficulty are
+# dropped. So is `mining.pow_algorithm`: OCEAN has no such option, and SHA256d is
+# the only thing it mines.
 #
-# `--test` below is therefore now checking the gateway against Knots' own vectors
-# rather than against itself, which is the only comparison that catches the
-# gateway and the node disagreeing.
+# The dupe table index fix that ad57651 carried is upstream now, as OCEAN #237.
 #
 # Pinned by commit, not by branch. A branch name is a moving target and this is
 # the one input that decides whether the work we hand an ASIC matches consensus.
-#
-# ad57651 adds the dupe table index fix and the local share reject reasons. The
-# fix is the reason to move: the per-thread duplicate share table corrupted its
-# own bucket index the first time it filled, which is a few hours of mining, and
-# only restarting the gateway cleared it. The reject reasons ship with it rather
-# than after it, because they are how an operator sees whether it worked: the
-# dashboard now says what refused a share instead of only how many. Both went
-# upstream as OCEAN #237 and Convoy #18.
 FROM debian:bookworm-slim AS build
 
 ARG DATUM_REPO=https://github.com/paulscode/datum_gateway.git
-ARG DATUM_REF=ad5765196092a1b1be9c8dfa77f0d854d84af387
+ARG DATUM_REF=0c51cc63baac73046fdea394795d0ecb063c47fc
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential cmake pkgconf git ca-certificates \
