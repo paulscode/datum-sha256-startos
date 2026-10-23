@@ -1,10 +1,9 @@
 #!/bin/bash
 # Generate the gateway config from the environment, wait for the node, run.
 #
-# Solo mining by default. Unlike the BLAKE2b sibling, pooled mining is not
-# impossible here: this gateway builds SHA256d templates, which is what every
-# DATUM pool validates. The DATUM Pool settings are therefore exposed and left
-# empty, which means solo; fill them in to point at a pool.
+# Solo mining by default. This gateway builds SHA256d templates, which is what
+# OCEAN and every other SHA256d DATUM pool validates. The DATUM Pool settings
+# are exposed and left empty, which means solo; fill them in to point at a pool.
 set -euo pipefail
 
 DATADIR=/data
@@ -199,9 +198,9 @@ JSON
 # variable rather than forty. The Umbrel app does not run this script at all.
 #
 # Merged rather than substituted: the generated config carries the things this
-# package owns (ports, credentials, the submit directory, the coinbase tag that
-# has to match the node's headline), and a user setting must not be able to
-# displace those. Only keys DATUM itself groups are merged, one level deep.
+# package owns (ports, credentials, the payout address), and a user setting
+# must not be able to displace those. Only keys DATUM itself groups are merged,
+# one level deep.
 if [ -n "${DATUM_SETTINGS:-}" ] && [ "${DATUM_SETTINGS}" != "{}" ]; then
     python3 - "$CONF" <<'PY' || { echo "FATAL: could not apply settings" >&2; exit 1; }
 import json, os, sys

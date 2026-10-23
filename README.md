@@ -70,9 +70,10 @@ nothing at all. Verified with the SDK's own comparator:
 
 ## Pooled mining works here
 
-The BLAKE2b sibling refuses pool settings because no DATUM pool can validate a
-BLAKE2b share. This gateway builds SHA256d templates, which is exactly what every
-DATUM pool validates, so the **DATUM Pool** config action is a real setting.
+This gateway builds SHA256d templates, which is what OCEAN and every other
+SHA256d DATUM pool validates, so the **DATUM Pool** config action is a real
+setting. (The BLAKE2b sibling can pool too, but only at a pool built for that
+chain, such as Lazarus or Convoy.)
 Leave it empty to mine solo; fill it in to mine to a pool while still building
 your own templates.
 
