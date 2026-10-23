@@ -3,7 +3,8 @@
 # The same repository as the BLAKE2b sibling, and a different line on it. The
 # BLAKE2b package builds from the Convoy-based branch, because only Convoy's fork
 # can talk to the pool that serves that chain. This one builds from the
-# `ocean-sha256-2` branch: OCEAN master (9e80dac, 2026-10-17) and four commits:
+# `ocean-sha256-2` branch: OCEAN v0.5.1beta (85a19fd, 2026-10-19) merged over
+# OCEAN master 9e80dac (2026-10-17) and four commits:
 #
 # - b46d74c: a miner can ask for a minimum difficulty, through mining.configure
 #   or, when stratum.password_difficulty is on, d=N in the password. This is our
@@ -30,7 +31,7 @@
 FROM debian:bookworm-slim AS build
 
 ARG DATUM_REPO=https://github.com/paulscode/datum_gateway.git
-ARG DATUM_REF=0c51cc63baac73046fdea394795d0ecb063c47fc
+ARG DATUM_REF=463f8c3bef67467e646ea78c8928384e15518110
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential cmake pkgconf git ca-certificates \
