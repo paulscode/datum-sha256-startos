@@ -10,7 +10,10 @@ const notes =
   'connection that opens with a TLS handshake is closed at once, so the ' +
   'MiningRigRentals pool test no longer reports a working endpoint as failing. ' +
   'The gateway answers datum.capabilities, so Pickhash can tell what it ' +
-  'supports. ' +
+  'supports. Both settings are on by default and can be turned off in ' +
+  'Stratum settings: "Serve miners below the pool\'s minimum difficulty", ' +
+  'and "Let miners request a difficulty in the Stratum password", which this ' +
+  'package has always switched on and now offers as a setting. ' +
   'Rebuilt on version 3 of the StartOS packaging SDK, which needs StartOS ' +
   '0.4.0.2. ' +
   'The gateway is now built from the current OCEAN DATUM Gateway source, ' +
@@ -32,7 +35,8 @@ const notes =
   'fd=N is no longer supported. ' +
   'Pooled mining has always worked here, and the warnings that said ' +
   'otherwise are gone, as is the BLAKE2b wording on the Stratum address. ' +
-  'Nothing you have set changes.'
+  'Nothing you have set changes, apart from serving miners below the pool ' +
+  'minimum, which is switched on as described above.'
 
 export const current = VersionInfo.of({
   version: '1.0.0:4',

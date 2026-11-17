@@ -31,7 +31,7 @@
 FROM debian:bookworm-slim AS build
 
 ARG DATUM_REPO=https://github.com/paulscode/datum_gateway.git
-ARG DATUM_REF=f35bf647a44b0764d8c2cae8f1c2be8365d55b92
+ARG DATUM_REF=1bdde4be070c8f6ae2617b43edbd86b21b821e47
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential cmake pkgconf git ca-certificates \
