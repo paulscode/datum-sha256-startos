@@ -124,6 +124,10 @@ const dict = {
   'While the pool is unreachable, your miners get no work at all.': 125,
   'Free text placed in the coinbase of blocks this gateway builds, when mining solo. Leave blank for “DATUM Gateway”. A pool overrides this.': 126,
   'Point your SHA256 ASIC at this address': 127,
+  "Serve miners below the pool's minimum difficulty": 128,
+  "Give each miner a difficulty that suits its own hashrate even when the pool's minimum is higher. Work is still committed at the pool's minimum and only shares that meet it are sent to the pool, so pool credit is unchanged. Recommended for rented rigs: without it, a busy gateway pushes every rig to a difficulty sized for the whole fleet.": 129,
+  'Let miners request a difficulty in the Stratum password': 130,
+  'A miner (or a rental marketplace) can ask for a difficulty with a password such as d=65536. Pickhash uses this to give each rented rig the difficulty its marketplace expects.': 131,
 } as const
 
 /**

@@ -1,6 +1,16 @@
 import { IMPOSSIBLE, VersionInfo } from '@start9labs/start-sdk'
 
 const notes =
+  'Rented rigs keep their own difficulty. With "Serve miners below the pool\'s ' +
+  'minimum difficulty" (Stratum settings, on by default), each miner gets a ' +
+  "difficulty that suits its hashrate even when the pool's minimum is far higher. " +
+  "Work is still committed at the pool's minimum and only shares meeting it are " +
+  'sent to the pool, so pool credit is unchanged. Vardiff now measures at the ' +
+  'difficulty it serves, which stops large overshoots after a step up. A ' +
+  'connection that opens with a TLS handshake is closed at once, so the ' +
+  'MiningRigRentals pool test no longer reports a working endpoint as failing. ' +
+  'The gateway answers datum.capabilities, so Pickhash can tell what it ' +
+  'supports. ' +
   'Rebuilt on version 3 of the StartOS packaging SDK, which needs StartOS ' +
   '0.4.0.2. ' +
   'The gateway is now built from the current OCEAN DATUM Gateway source, ' +

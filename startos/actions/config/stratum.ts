@@ -71,6 +71,20 @@ const inputSpec = InputSpec.of({
     ),
     default: true,
   }),
+  vardiff_below_pool_min: Value.toggle({
+    name: i18n("Serve miners below the pool's minimum difficulty"),
+    default: true,
+    description: i18n(
+      "Give each miner a difficulty that suits its own hashrate even when the pool's minimum is higher. Work is still committed at the pool's minimum and only shares that meet it are sent to the pool, so pool credit is unchanged. Recommended for rented rigs: without it, a busy gateway pushes every rig to a difficulty sized for the whole fleet.",
+    ),
+  }),
+  password_difficulty: Value.toggle({
+    name: i18n('Let miners request a difficulty in the Stratum password'),
+    default: true,
+    description: i18n(
+      'A miner (or a rental marketplace) can ask for a difficulty with a password such as d=65536. Pickhash uses this to give each rented rig the difficulty its marketplace expects.',
+    ),
+  }),
   max_clients_per_thread: Value.number({
     name: i18n('Max Clients Per Thread'),
     description: i18n('Miners each stratum thread will accept.'),

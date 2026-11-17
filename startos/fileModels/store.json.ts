@@ -66,6 +66,9 @@ const shape = z.looseObject({
           vardiff_quickdiff_delta: z.number().int().positive().optional(),
           share_stale_seconds: z.number().int().positive().optional(),
           fingerprint_miners: z.boolean().optional(),
+          // Both on in the generated config unless set false here (entrypoint.sh).
+          vardiff_below_pool_min: z.boolean().optional(),
+          password_difficulty: z.boolean().optional(),
           idle_timeout_no_subscribe: z.number().int().nonnegative().optional(),
           idle_timeout_no_shares: z.number().int().nonnegative().optional(),
           idle_timeout_max_last_work: z.number().int().nonnegative().optional(),
