@@ -6,6 +6,7 @@ import {
   rpcHostId as knotsRpcHostId,
   rpcPort as knotsRpcPort,
 } from 'knots-prerdts-startos/startos/utils'
+import { bounded, unanswered } from './boundedCheck'
 import { sdk } from './sdk'
 import { dataDir, knotsMountpoint, stratumPort, uiPort } from './utils'
 
@@ -170,11 +171,14 @@ export const main = sdk.setupMain(async ({ effects }) => {
         exec: { command: ['/usr/local/bin/entrypoint.sh'], env },
         ready: {
           display: i18n('Web Interface'),
-          fn: () =>
-            sdk.healthCheck.checkPortListening(effects, uiPort, {
-              successMessage: i18n('The Datum Gateway dashboard is ready'),
-              errorMessage: i18n('The Datum Gateway dashboard is not ready'),
-            }),
+          fn: bounded(
+            () =>
+              sdk.healthCheck.checkPortListening(effects, uiPort, {
+                successMessage: i18n('The Datum Gateway dashboard is ready'),
+                errorMessage: i18n('The Datum Gateway dashboard is not ready'),
+              }),
+            unanswered,
+          ),
         },
         requires: ['chown'],
       })
@@ -203,7 +207,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
         requires: ['gateway'],
         ready: {
           display: i18n('Stratum Interface'),
-          fn: async () => {
+          fn: bounded(async () => {
             const res = await sdk.healthCheck.checkPortListening(
               effects,
               stratumPort,
@@ -220,7 +224,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
                 'Waiting for the node. The stratum port opens once this gateway has its first block template, which needs a node that has finished syncing.',
               ),
             }
-          },
+          }, unanswered),
         },
       })
       /**
@@ -243,7 +247,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
         ready: {
           display: i18n('Number of Stratum Clients Connected'),
           trigger: sdk.trigger.cooldownTrigger(10000),
-          fn: async () => {
+          fn: bounded(async () => {
             const num = await scrape(
               subcontainer,
               uiPort,
@@ -259,7 +263,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
                   result: 'success' as const,
                   message: i18n('Could not read the number of miners'),
                 }
-          },
+          }, unanswered),
         },
       })
       .addHealthCheck('estimated-hashrate', {
@@ -267,7 +271,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
         ready: {
           display: i18n('Estimated Hashrate'),
           trigger: sdk.trigger.cooldownTrigger(10000),
-          fn: async () => {
+          fn: bounded(async () => {
             const num = await scrape(
               subcontainer,
               uiPort,
@@ -283,7 +287,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
                   result: 'success' as const,
                   message: i18n('Could not read the hashrate'),
                 }
-          },
+          }, unanswered),
         },
       })
   )

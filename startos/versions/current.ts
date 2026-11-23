@@ -1,7 +1,11 @@
 import { IMPOSSIBLE, VersionInfo } from '@start9labs/start-sdk'
 
 const notes =
-  'Fixes from independent reviews of the gateway changes. A block found in a ' +
+  'Stop, updates and restarts can no longer be held up by a status check that ' +
+  'never finishes: a check still unanswered after a minute says so, and no ' +
+  'longer keeps the service from stopping. The same problem made Bitcoin Knots ' +
+  '(BLAKE2b) Companion updates hang before its 29.5.0:1. ' +
+  'From 1.0.0:5: fixes from independent reviews of the gateway changes. A block found in a ' +
   'quickdiff share for an earlier job is now submitted before the share is ' +
   'refused; before, such a share was refused first, so a block in it could be ' +
   'lost. A second quickdiff on the same job no longer resends identical work: ' +
@@ -12,7 +16,7 @@ const notes =
   'in the duplicate-share check is fixed.'
 
 export const current = VersionInfo.of({
-  version: '1.0.0:5',
+  version: '1.0.0:6',
   releaseNotes: {
     en_US: notes,
     es_ES: notes,

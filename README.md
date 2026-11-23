@@ -30,6 +30,15 @@ itself aligned to the official Datum Gateway package's action list, health-check
 names and interface names. So this inherits that alignment rather than
 re-deriving it.
 
+The health checks are bounded the same way too (`startos/boundedCheck.ts`):
+start-sdk awaits a check's run with no limit and a stop waits for every check
+before the gateway it requires, so a run still pending after a minute is left
+behind, the check repeats its last result twice and then reads *This check has
+not finished after a minute* (`starting`, never `failure`), and a run that
+finishes late is the next call's answer. Without it, one run that never
+returned would hold up Stop, updates and restarts, as in Bitcoin Knots (BLAKE2b)
+Companion before 29.5.0:1.
+
 **The image is built from the same fork, on a different line.** `datum-blake2b`
 builds the Convoy-based branch, because only Convoy's fork talks to the pool on that
 chain. This package builds OCEAN upstream master plus our minimum difficulty request
